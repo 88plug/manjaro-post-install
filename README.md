@@ -25,7 +25,7 @@ yes | pacman -Sy autoconf automake binutils bison fakeroot file findutils flex g
 
 echo "6. Enabling snap in package manager"
 yes | pacman -Sy pamac-snap-plugin
-yes | pacman -Sy pamac-flatpak-plugin
+1 | pacman -Sy --noconfirm pamac-flatpak-plugin
 
 echo "7. Force colors in terminals"
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
