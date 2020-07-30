@@ -14,11 +14,14 @@ echo "${u}" > user.log
 echo "2. Enable SSH"
 systemctl enable sshd.service; systemctl start sshd.service
 
-echo "3. Make .ssh folder for keys"
+echo "3. Make .ssh folder for keys, make 4096 ssh keys, add authorized_key file and chmod!"
 mkdir ~/.ssh
+HOSTNAME=`hostname` ssh-keygen -t rsa -b 4096 -C "$HOSTNAME" -f "$HOME/.ssh/id_rsa" -P "" && cat ~/.ssh/id_rsa.pub
+touch ~/.ssh/authorized_keys
+chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools"
-yes | pacman -Sy ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools
+yes | pacman -Sy ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop
 
 echo "5. Install base-devel for using yay and building packages with AUR"
 yes | pacman -Sy autoconf automake binutils bison fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed sudo systemd texinfo util-linux which 
