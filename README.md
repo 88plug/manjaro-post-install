@@ -22,8 +22,9 @@ echo "3. Make .ssh folder for keys, make 4096 ssh keys, add authorized_key file 
 mkdir ~/.ssh
 HOSTNAME=`hostname` ssh-keygen -t rsa -b 4096 -C "$HOSTNAME" -f "$HOME/.ssh/id_rsa" -P "" && cat ~/.ssh/id_rsa.pub
 touch ~/.ssh/authorized_keys
-cp -r ~/.ssh /root/
 chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+cp -r /root/.ssh /home/$u/
+chown $u:$u /home/$u/.ssh -R
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
 yes | pacman -Sy ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop gnome-disk-utility
