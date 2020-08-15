@@ -4,12 +4,14 @@
 #!/bin/bash
 # 15 things to do after installing Manjaro
 
-echo "1. Updating mirrors and Manjaro"
-pacman-mirrors --geoip ; yes | pacman -Syyu
-
 echo "Remember current user $u before reboot"
 u=$(logname)
 echo "${u}" > user.log
+
+
+echo "1. Updating mirrors and Manjaro"
+#pacman-mirrors --geoip ; yes | pacman -Syyu #OLD WAY Max retries exceeded with url: /v1/ip/country/full
+pacman-mirrors --fasttrack ; yes | pacman -Syyu
 
 echo "2. Enable SSH"
 systemctl enable sshd.service; systemctl start sshd.service
@@ -20,8 +22,8 @@ HOSTNAME=`hostname` ssh-keygen -t rsa -b 4096 -C "$HOSTNAME" -f "$HOME/.ssh/id_r
 touch ~/.ssh/authorized_keys
 chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
 
-echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools"
-yes | pacman -Sy ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop
+echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
+yes | pacman -Sy ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop gnome-disk-utility
 
 echo "5. Install base-devel for using yay and building packages with AUR"
 yes | pacman -Sy autoconf automake binutils bison fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed sudo systemd texinfo util-linux which 
