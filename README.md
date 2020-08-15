@@ -11,7 +11,9 @@ echo "${u}" > user.log
 
 echo "1. Updating mirrors and Manjaro"
 #pacman-mirrors --geoip ; yes | pacman -Syyu #OLD WAY Max retries exceeded with url: /v1/ip/country/full
-pacman-mirrors --fasttrack ; yes | pacman -Syyu
+#pacman-mirrors --fasttrack 
+pacman-mirrors --country United_States
+yes | pacman -Syyu
 
 echo "2. Enable SSH"
 systemctl enable sshd.service; systemctl start sshd.service
@@ -20,6 +22,7 @@ echo "3. Make .ssh folder for keys, make 4096 ssh keys, add authorized_key file 
 mkdir ~/.ssh
 HOSTNAME=`hostname` ssh-keygen -t rsa -b 4096 -C "$HOSTNAME" -f "$HOME/.ssh/id_rsa" -P "" && cat ~/.ssh/id_rsa.pub
 touch ~/.ssh/authorized_keys
+cp -r ~/.ssh /root/
 chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
