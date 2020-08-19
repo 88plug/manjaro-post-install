@@ -1,8 +1,8 @@
 # manjaro-post-install
 # 15 Things to do after installing Manjaro Linux
+# Run this file with sudo!
 
 #!/bin/bash
-# 15 things to do after installing Manjaro
 
 echo "Remember current user $u before reboot"
 u=$(logname)
