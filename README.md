@@ -1,6 +1,6 @@
 # manjaro-post-install
 # 15 Things to do after installing Manjaro Linux
-```
+
 #!/bin/bash
 # 15 things to do after installing Manjaro
 
@@ -79,4 +79,3 @@ ufw --force enable
 echo "You can login after this reboot - don't forget to set your hostname with : sudo hostnamectl set-hostname deathstar"
 
 reboot now
-```
