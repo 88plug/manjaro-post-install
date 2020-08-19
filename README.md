@@ -9,8 +9,6 @@ u=$(logname)
 echo "${u}" > user.log
 
 echo "1. Updating mirrors and Manjaro"
-#pacman-mirrors --geoip ; yes | pacman -Syyu #OLD WAY Max retries exceeded with url: /v1/ip/country/full
-#pacman-mirrors --fasttrack 
 pacman-mirrors --country United_States
 yes | pacman -Syyu
 
