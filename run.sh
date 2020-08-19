@@ -46,6 +46,9 @@ timedatectl set-ntp true
 echo "9. Docker user setup"
 groupadd docker
 usermod -aG docker $(cat user.log)
+sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX\"cgroup_enable=memory swapaccount=1\"/g' /etc/default/grub
+update-grub
+
 
 echo "10. Allow SSH"
 ufw allow ssh
@@ -75,6 +78,9 @@ systemctl enable fail2ban.service
 echo "15. Starting and enabling the docker"
 systemctl start docker.service
 systemctl enable docker.service
+
+echo "Enabling QEMU agent for proxmox"
+systemctl start qemu-ga.service ; systemctl enable qemu-ga.service
 
 ufw --force enable
 echo "You can login after this reboot - don't forget to set your hostname with : sudo hostnamectl set-hostname deathstar"
