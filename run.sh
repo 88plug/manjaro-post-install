@@ -46,7 +46,7 @@ timedatectl set-ntp true
 echo "9. Docker user setup"
 groupadd docker
 usermod -aG docker $(cat user.log)
-sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX\"cgroup_enable=memory swapaccount=1\"/g' /etc/default/grub
+sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/g' /etc/default/grub
 update-grub
 
 
