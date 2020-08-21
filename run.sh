@@ -27,7 +27,7 @@ cp -r /root/.ssh /home/$u/
 chown $u:$u /home/$u/.ssh -R
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
-yes | pacman -Sy screen haproxy net-tools ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop gnome-disk-utility
+yes | pacman -Sy pigz screen haproxy net-tools ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop gnome-disk-utility
 
 echo "5. Install base-devel for using yay and building packages with AUR"
 yes | pacman -Sy autoconf automake binutils bison fakeroot file findutils flex gawk gcc gettext grep groff gzip libtool m4 make pacman patch pkgconf sed sudo systemd texinfo util-linux which 
@@ -49,6 +49,35 @@ usermod -aG docker $(cat user.log)
 sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/g' /etc/default/grub
 update-grub
 
+if [[ $(mount -l | grep "zfs") ]]; then
+echo "Found ZFS!"
+cat <<EOT >> /etc/docker/daemon.json
+{
+  "storage-driver": "zfs",
+  "dns": ["1.0.0.1", "1.1.1.1"],
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 10,
+  "log-opts": {
+    "max-size": "1m",
+    "max-file":"3",
+  }
+}
+EOT
+rm -rf /var/lib/docker
+else
+echo "No ZFS Found"
+cat <<EOT >> /etc/docker/daemon.json
+{
+  "dns": ["1.0.0.1", "1.1.1.1"],
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 10,
+  "log-opts": {
+    "max-size": "1m",
+    "max-file":"3",
+  }
+}
+EOT
+fi
 
 echo "10. Allow SSH"
 ufw allow ssh
@@ -84,5 +113,24 @@ systemctl start qemu-ga.service ; systemctl enable qemu-ga.service
 
 ufw --force enable
 echo "You can login after this reboot - don't forget to set your hostname with : sudo hostnamectl set-hostname deathstar"
+
+
+## Pretty MOTD BANNER
+if [ -z "${NO_MOTD_BANNER}" ] ; then
+  if ! grep -q https "/etc/motd" ; then
+    cat << 'EOF' > /etc/motd.new
+	   This system is optimised by:            https://eXtremeSHOK.com
+	     __   ___                            _____ _    _  ____  _  __
+	     \ \ / / |                          / ____| |  | |/ __ \| |/ /
+	  ___ \ V /| |_ _ __ ___ _ __ ___   ___| (___ | |__| | |  | | ' /
+	 / _ \ > < | __| '__/ _ \ '_ ` _ \ / _ \\___ \|  __  | |  | |  <
+	|  __// . \| |_| | |  __/ | | | | |  __/____) | |  | | |__| | . \
+	 \___/_/ \_\\__|_|  \___|_| |_| |_|\___|_____/|_|  |_|\____/|_|\_\
+EOF
+
+    cat /etc/motd >> /etc/motd.new
+    mv /etc/motd.new /etc/motd
+  fi
+fi
 
 reboot now
