@@ -43,7 +43,7 @@ sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /home/$(cat user.log
 echo "8. Enable NTP!"
 timedatectl set-ntp true
 
-echo "9. Docker user setup"
+echo "9. Docker user setup and better options"
 groupadd docker
 usermod -aG docker $(cat user.log)
 sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/g' /etc/default/grub
@@ -79,16 +79,13 @@ cat <<EOT >> /etc/docker/daemon.json
 EOT
 fi
 
-echo "10. Allow SSH"
-ufw allow ssh
+echo "10. Allow SSH and limit it"
+ufw allow ssh ; ufw limit ssh
 
-echo "11. Limit SSH"
-ufw limit ssh
-
-echo "12. Rotate logs at 50M"
+echo "11. Rotate logs at 50M"
 sed -i "/^#SystemMaxUse/s/#SystemMaxUse=/SystemMaxUse=50M/" /etc/systemd/journald.conf
 
-echo "13. Setup jail for naughty SSH attempts"
+echo "12. Setup jail for naughty SSH attempts"
 cat <<EOT > /etc/fail2ban/jail.d/sshd.local
 [sshd]
 enabled   = true
@@ -100,15 +97,16 @@ findtime  = 1d
 bantime   = 52w
 EOT
 
-echo "14. Starting and enabling the jail/fail2ban"
+echo "13. Starting and enabling the jail/fail2ban"
 systemctl start fail2ban.service
 systemctl enable fail2ban.service
 
-echo "15. Starting and enabling the docker"
+echo "14. Starting and enabling the docker"
 systemctl start docker.service
 systemctl enable docker.service
 
-echo "Enabling QEMU agent for proxmox"
+
+echo "15. Enabling QEMU agent for proxmox"
 systemctl start qemu-ga.service ; systemctl enable qemu-ga.service
 
 ufw --force enable
