@@ -3,6 +3,28 @@
 # Run this file with sudo! 
 
 #!/bin/bash
+if [ "$EUID" -ne 0 ]
+  then echo "Please run with sudo, sudo ./run.sh"
+  exit
+fi
+echo "Welcome, just two questions to start!"
+read -p 'What hostname should we use for this machine?: ' hostname
+if [[ -z "$hostname" ]]; then
+   printf '%s\n' "No hostname entered"
+   exit 1
+else
+   printf "You entered %s " "$hostname"
+   hostnamectl set-hostname $hostname
+fi
+
+while true; do
+    read -p "Keep GUI?" yn
+    case $yn in
+        [Yy]* ) gui="1"; break;;
+        [Nn]* ) gui="2"; break;;
+        * ) echo "Please answer yes(y) or no(n).";;
+    esac
+done
 
 echo "Remember current user $u before reboot"
 u=$(logname)
@@ -25,6 +47,15 @@ touch ~/.ssh/authorized_keys
 chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
 cp -r /root/.ssh /home/$u/
 chown $u:$u /home/$u/.ssh -R
+
+echo "GUI is set to $gui"
+
+if [[ $gui == "1" ]]; then
+echo "Removing the GUI"
+yes | pacman -Rs xfce4 gtkhash-thunar libxfce4ui mousepad orage thunar-archive-plugin thunar-media-tags-plugin xfce4-battery-plugin xfce4-clipman-plugin xfce4-pulseaudio-plugin xfce4-screenshooter xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin xfce4-xkb-plugin parole xfce4-notifyd lightdm light-locker lightdm-gtk-greeter lightdm-gtk-greeter-settings modemmanager
+else
+echo "Keeping the GUI"
+fi
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
 yes | pacman -Sy ddrescue pigz screen haproxy net-tools ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools qemu-guest-agent iotop gnome-disk-utility
@@ -110,7 +141,7 @@ echo "15. Enabling QEMU agent for proxmox"
 systemctl start qemu-ga.service ; systemctl enable qemu-ga.service
 
 ufw --force enable
-echo "You can login after this reboot - don't forget to set your hostname with : sudo hostnamectl set-hostname deathstar"
+echo "You can login after this reboot"
 
 
 ## Pretty MOTD BANNER
@@ -129,5 +160,6 @@ EOF
     mv /etc/motd.new /etc/motd
   fi
 fi
+
 
 reboot now
