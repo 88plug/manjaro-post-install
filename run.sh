@@ -14,11 +14,12 @@ if [[ -z "$hostname" ]]; then
    exit 1
 else
    printf "You entered %s " "$hostname"
-   hostnamectl set-hostname $hostname
+   hostnamectl set-hostname $hostname ; echo ""
 fi
 
 while true; do
-    read -p "Keep GUI?" yn
+printf ""
+read -p "Keep Manjaro XFCE GUI - do you need a screen? (y/n) " yn
     case $yn in
         [Yy]* ) gui="1"; break;;
         [Nn]* ) gui="2"; break;;
