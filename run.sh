@@ -118,14 +118,13 @@ echo "You can login after this reboot - don't forget to set your hostname with :
 ## Pretty MOTD BANNER
 if [ -z "${NO_MOTD_BANNER}" ] ; then
   if ! grep -q https "/etc/motd" ; then
-    cat << 'EOF' > /etc/motd.new
-	   This system is optimised by:            https://eXtremeSHOK.com
-	     __   ___                            _____ _    _  ____  _  __
-	     \ \ / / |                          / ____| |  | |/ __ \| |/ /
-	  ___ \ V /| |_ _ __ ___ _ __ ___   ___| (___ | |__| | |  | | ' /
-	 / _ \ > < | __| '__/ _ \ '_ ` _ \ / _ \\___ \|  __  | |  | |  <
-	|  __// . \| |_| | |  __/ | | | | |  __/____) | |  | | |__| | . \
-	 \___/_/ \_\\__|_|  \___|_| |_| |_|\___|_____/|_|  |_|\____/|_|\_\
+    cat << 'EOF' > /etc/motd.new	   
+  ___   ___         __           
+ ( _ ) ( _ ) ___   / /__ __ ___ _
+/ _  |/ _  |/ _ \ / // // // _ `/
+\___/ \___// .__//_/ \_,_/ \_, / 
+          /_/             /___/  
+This system is optimised by: https://github.com/88plug/manjaro-post-install
 EOF
 
     cat /etc/motd >> /etc/motd.new
