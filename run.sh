@@ -72,8 +72,9 @@ echo "7. Force colors in terminals"
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /home/$(cat user.log)/.bashrc
 
-echo "8. Enable NTP!"
+echo "8. Enable NTP and File Limits!"
 timedatectl set-ntp true
+echo fs.nr_open=2147483584 | tee /etc/sysctl.d/40-max-user-watches.conf
 
 echo "9. Docker user setup and better options"
 groupadd docker
