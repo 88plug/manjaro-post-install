@@ -166,4 +166,8 @@ EOF
 fi
 
 
+timezone=$(curl https://ipapi.co/$(dig +short myip.opendns.com @resolver1.opendns.com)/timezone)
+echo "Got $timezone from $(dig +short myip.opendns.com @resolver1.opendns.com)"
+timedatectl set-timezone $timezone
+
 reboot now
