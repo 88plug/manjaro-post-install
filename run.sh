@@ -86,7 +86,7 @@ update-grub
 
 if [[ $(mount -l | grep "zfs") ]]; then
 echo "Found ZFS!"
-cat <<EOT >> /etc/docker/daemon.json
+cat > /etc/docker/daemon.json << EOL
 {
   "storage-driver": "zfs",
   "dns": ["1.0.0.1", "1.1.1.1"],
@@ -97,11 +97,11 @@ cat <<EOT >> /etc/docker/daemon.json
     "max-file":"3",
   }
 }
-EOT
+EOL
 rm -rf /var/lib/docker
 else
 echo "No ZFS Found"
-cat <<EOT >> /etc/docker/daemon.json
+cat > /etc/docker/daemon.json << EOL
 {
   "dns": ["1.0.0.1", "1.1.1.1"],
   "max-concurrent-downloads": 10,
@@ -111,7 +111,7 @@ cat <<EOT >> /etc/docker/daemon.json
     "max-file":"3",
   }
 }
-EOT
+EOL
 fi
 
 echo "10. Allow SSH and limit it"
@@ -158,6 +158,8 @@ if [ -z "${NO_MOTD_BANNER}" ] ; then
 \___/ \___// .__//_/ \_,_/ \_, / 
           /_/             /___/  
 This system is optimised by: https://github.com/88plug/manjaro-post-install
+
+UFW Enabled / Port 22 Open
 EOF
 
     cat /etc/motd >> /etc/motd.new
