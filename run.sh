@@ -109,7 +109,6 @@ echo "14. Starting and enabling the docker"
 systemctl start docker.service
 systemctl enable docker.service
 
-
 if [[ $(mount -l | grep "zfs") ]]; then
 echo "Found ZFS!"
 cat > /etc/docker/daemon.json << EOL
@@ -120,7 +119,7 @@ cat > /etc/docker/daemon.json << EOL
   "max-concurrent-uploads": 10,
   "log-opts": {
     "max-size": "1m",
-    "max-file":"3",
+    "max-file":"3"
   }
 }
 EOL
@@ -134,7 +133,7 @@ cat > /etc/docker/daemon.json << EOL
   "max-concurrent-uploads": 10,
   "log-opts": {
     "max-size": "1m",
-    "max-file":"3",
+    "max-file":"3"
   }
 }
 EOL
