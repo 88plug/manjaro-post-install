@@ -1,6 +1,10 @@
 # manjaro-post-install
-# 15 Things to do after installing Manjaro Linux
-# Run this file with sudo!
+Looking for a quick and setup for Manjaro that will get you going after an installation?  You have found the spot!
+
+# All the Things to do after installing Manjaro Linux
+ ```git clone https://github.com/88plug/manjaro-post-install ; cd manjaro-post-install ; chmod +x run.sh ; sudo ./run.sh```
+ 
+ # Run run.sh with sudo!
 
 ```
 # manjaro-post-install
