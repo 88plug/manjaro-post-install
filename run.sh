@@ -72,8 +72,7 @@ echo "7. Force colors in terminals"
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /home/$(cat user.log)/.bashrc
 
-echo "8. Enable NTP and File Limits!"
-timedatectl set-ntp true
+echo "8. Enable File Limits!"
 echo fs.nr_open=2147483584 | tee /etc/sysctl.d/40-max-user-watches.conf
 echo fs.file-max=100000 | tee /etc/sysctl.d/40-max-user-watches.conf
 echo fs.inotify.max_user_watches=524288 | tee /etc/sysctl.d/40-max-user-watches.conf
@@ -83,6 +82,33 @@ groupadd docker
 usermod -aG docker $(cat user.log)
 sed -i 's/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/g' /etc/default/grub
 update-grub
+
+echo "10. Allow SSH and limit it"
+ufw allow ssh ; ufw limit ssh
+
+echo "11. Rotate logs at 50M"
+sed -i "/^#SystemMaxUse/s/#SystemMaxUse=/SystemMaxUse=50M/" /etc/systemd/journald.conf
+
+echo "12. Setup jail for naughty SSH attempts"
+cat <<EOT > /etc/fail2ban/jail.d/sshd.local
+[sshd]
+enabled   = true
+filter    = sshd
+banaction = ufw
+backend   = systemd
+maxretry  = 5
+findtime  = 1d
+bantime   = 52w
+EOT
+
+echo "13. Starting and enabling the jail/fail2ban"
+systemctl start fail2ban.service
+systemctl enable fail2ban.service
+
+echo "14. Starting and enabling the docker"
+systemctl start docker.service
+systemctl enable docker.service
+
 
 if [[ $(mount -l | grep "zfs") ]]; then
 echo "Found ZFS!"
@@ -114,35 +140,9 @@ cat > /etc/docker/daemon.json << EOL
 EOL
 fi
 
-echo "10. Allow SSH and limit it"
-ufw allow ssh ; ufw limit ssh
-
-echo "11. Rotate logs at 50M"
-sed -i "/^#SystemMaxUse/s/#SystemMaxUse=/SystemMaxUse=50M/" /etc/systemd/journald.conf
-
-echo "12. Setup jail for naughty SSH attempts"
-cat <<EOT > /etc/fail2ban/jail.d/sshd.local
-[sshd]
-enabled   = true
-filter    = sshd
-banaction = ufw
-backend   = systemd
-maxretry  = 5
-findtime  = 1d
-bantime   = 52w
-EOT
-
-echo "13. Starting and enabling the jail/fail2ban"
-systemctl start fail2ban.service
-systemctl enable fail2ban.service
-
-echo "14. Starting and enabling the docker"
-systemctl start docker.service
-systemctl enable docker.service
-
-
 echo "15. Enabling QEMU agent for proxmox"
-systemctl start qemu-ga.service ; systemctl enable qemu-ga.service
+systemctl start qemu-ga.service
+systemctl enable qemu-ga.service
 
 ufw --force enable
 echo "You can login after this reboot"
@@ -167,9 +167,11 @@ EOF
   fi
 fi
 
-
-timezone=$(curl https://ipapi.co/$(dig +short myip.opendns.com @resolver1.opendns.com)/timezone)
-echo "Got $timezone from $(dig +short myip.opendns.com @resolver1.opendns.com)"
+echo "Getting IP and Timezone info"
+ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+timezone=$(curl https://ipapi.co/$ip/timezone)
 timedatectl set-timezone $timezone
-
+timedatectl set-ntp true
+echo "Got $timezone from $ip"
+echo "All done - Rebooting"
 reboot now
