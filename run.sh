@@ -27,6 +27,16 @@ read -p "Keep Manjaro XFCE GUI - do you need a screen? (y/n) " yn
     esac
 done
 
+while true; do
+printf ""
+read -p "Do you need printer support? (y/n) " yn
+    case $yn in
+        [Yy]* ) print="1"; break;;
+        [Nn]* ) print="2"; break;;
+        * ) echo "Please answer yes(y) or no(n).";;
+    esac
+done
+
 echo "Remember current user $u before reboot"
 u=$(logname)
 echo "${u}" > user.log
@@ -58,6 +68,15 @@ else
 echo "Keeping the GUI"
 echo "Disable xfce power-manager/blanks screen by default etc"
 xfce4-power-manager -q
+fi
+
+if [[ $print == "2" ]]; then
+echo "No printer support required"
+else
+echo "Adding printer support"
+yes | pacman -Rs system-config-printer manjaro-printer cups
+cp /etc/cups/cupsd.conf.default /etc/cups/cupsd.conf
+systemctl enable cups.service
 fi
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
