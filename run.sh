@@ -110,6 +110,9 @@ ufw allow ssh ; ufw limit ssh
 echo "11. Rotate logs at 50M"
 sed -i "/^#SystemMaxUse/s/#SystemMaxUse=/SystemMaxUse=50M/" /etc/systemd/journald.conf
 
+#Add vaccum size to limit log sizes
+journalctl --vacuum-size=1M
+
 echo "12. Setup jail for naughty SSH attempts"
 cat <<EOT > /etc/fail2ban/jail.d/sshd.local
 [sshd]
