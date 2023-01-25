@@ -11,6 +11,10 @@ Looking for a quick and setup for Manjaro that will get you going after an insta
 # 15 Things to do after installing Manjaro Linux
 # Run this file with sudo! 
 
+# manjaro-post-install
+# 15 Things to do after installing Manjaro Linux
+# Run this file with sudo! 
+
 #!/bin/bash
 if [ "$EUID" -ne 0 ]
   then echo "Please run with sudo, sudo ./run.sh"
@@ -32,6 +36,16 @@ read -p "Keep Manjaro XFCE GUI - do you need a screen? (y/n) " yn
     case $yn in
         [Yy]* ) gui="1"; break;;
         [Nn]* ) gui="2"; break;;
+        * ) echo "Please answer yes(y) or no(n).";;
+    esac
+done
+
+while true; do
+printf ""
+read -p "Do you need printer support? (y/n) " yn
+    case $yn in
+        [Yy]* ) print="1"; break;;
+        [Nn]* ) print="2"; break;;
         * ) echo "Please answer yes(y) or no(n).";;
     esac
 done
@@ -62,9 +76,20 @@ echo "GUI is set to $gui"
 
 if [[ $gui == "2" ]]; then
 echo "Removing the GUI"
-yes | pacman -Rs xfce4 gtkhash-thunar libxfce4ui mousepad orage thunar-archive-plugin thunar-media-tags-plugin xfce4-battery-plugin xfce4-clipman-plugin xfce4-pulseaudio-plugin xfce4-screenshooter xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin xfce4-xkb-plugin parole xfce4-notifyd lightdm light-locker lightdm-gtk-greeter lightdm-gtk-greeter-settings modemmanager
+yes | pacman -Rs xfce4 gtkhash-thunar libxfce4ui mousepad thunar-archive-plugin thunar-media-tags-plugin xfce4-taskmanager xfce4-battery-plugin xfce4-clipman-plugin xfce4-pulseaudio-plugin xfce4-screenshooter xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin xfce4-xkb-plugin parole xfce4-notifyd lightdm light-locker lightdm-gtk-greeter lightdm-gtk-greeter-settings modemmanager 
 else
 echo "Keeping the GUI"
+echo "Disable xfce power-manager/blanks screen by default etc"
+xfce4-power-manager -q
+fi
+
+if [[ $print == "2" ]]; then
+echo "No printer support required"
+else
+echo "Adding printer support"
+yes | pacman -Rs system-config-printer manjaro-printer cups
+cp /etc/cups/cupsd.conf.default /etc/cups/cupsd.conf
+systemctl enable cups.service
 fi
 
 echo "4. Install goodies | ntp docker docker-compose glances htop bmon jq whois yay ufw fail2ban git bc nmap smartmontools gnome-disk-utility"
@@ -97,6 +122,9 @@ ufw allow ssh ; ufw limit ssh
 
 echo "11. Rotate logs at 50M"
 sed -i "/^#SystemMaxUse/s/#SystemMaxUse=/SystemMaxUse=50M/" /etc/systemd/journald.conf
+
+#Add vaccum size to limit log sizes
+journalctl --vacuum-size=1M
 
 echo "12. Setup jail for naughty SSH attempts"
 cat <<EOT > /etc/fail2ban/jail.d/sshd.local
@@ -181,6 +209,7 @@ timezone=$(curl https://ipapi.co/$ip/timezone)
 timedatectl set-timezone $timezone
 timedatectl set-ntp true
 echo "Got $timezone from $ip"
+
 echo "All done - Rebooting"
 reboot now
 ```
