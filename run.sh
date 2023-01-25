@@ -63,7 +63,7 @@ echo "GUI is set to $gui"
 
 if [[ $gui == "2" ]]; then
 echo "Removing the GUI"
-yes | pacman -Rs xfce4 gtkhash-thunar libxfce4ui mousepad orage thunar-archive-plugin thunar-media-tags-plugin xfce4-battery-plugin xfce4-clipman-plugin xfce4-pulseaudio-plugin xfce4-screenshooter xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin xfce4-xkb-plugin parole xfce4-notifyd lightdm light-locker lightdm-gtk-greeter lightdm-gtk-greeter-settings modemmanager
+yes | pacman -Rs xfce4 gtkhash-thunar libxfce4ui mousepad thunar-archive-plugin thunar-media-tags-plugin xfce4-taskmanager xfce4-battery-plugin xfce4-clipman-plugin xfce4-pulseaudio-plugin xfce4-screenshooter xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin xfce4-xkb-plugin parole xfce4-notifyd lightdm light-locker lightdm-gtk-greeter lightdm-gtk-greeter-settings modemmanager 
 else
 echo "Keeping the GUI"
 echo "Disable xfce power-manager/blanks screen by default etc"
